@@ -5,14 +5,10 @@ import Link from 'next/link';
 import { 
   ShoppingCart, X, CheckCircle, Phone, Mail, ShieldCheck, 
   Truck, Star, Zap, Rocket, Activity, Quote, Users, 
-  Flame, MousePointerClick, ChevronRight 
+  Flame, MousePointerClick, ChevronRight, Loader2
 } from 'lucide-react';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const ROYAL_OFFER_ID = 3;
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
+const ROYAL_OFFER_ID = 3; 
 
 const offers = [
   { 
@@ -39,7 +35,7 @@ const offers = [
     image: "/products/pack5.webp",
     tag: "الأكثر طلباً 🔥",
     ctaLabel: "احجز العرض الملكي الآن",
-    order: 2 // العرض الملكي في الوسط
+    order: 2 
   },
   { 
     id: 2, 
@@ -71,9 +67,6 @@ const reviews = [
   { id: "rev-amin", name: "أمين. ح", city: "مراكش", avatarColor: "bg-blue-100 text-blue-800", stars: 5, title: "أحسن سناك جربتو في حياتي", text: "أفضل سناك خديتو للتدريب. خفيف على المعدة وكيعطي طاقة حقيقية بلا سكر. دابا مكنقدرش نتخيل التمرين بلاه.", date: "12 أبريل 2025", product: "العرض الملكي — 5 باقات", verified: true, helpful: 34, badge: "مشترٍ متكرر" },
   { id: "rev-layla", name: "ليلى. ب", city: "طنجة", avatarColor: "bg-rose-100 text-rose-800", stars: 5, title: "ولادي ماشيين يطلبو منو كل أسبوع", text: "ولادي عجبهم بزااف! القرمشة خيالية والمذاق كأنها فاكهة طرية يلاه تقطفات. الآن هو السناك الرسمي ديال الدار.", date: "28 مارس 2025", product: "عرض العائلة — 3 باقات", verified: true, helpful: 21, badge: null },
   { id: "rev-yassin", name: "ياسين. ق", city: "أكادير", avatarColor: "bg-emerald-100 text-emerald-800", stars: 5, title: "جودة عالية وتوصيل فائق السرعة", text: "توصيل وصل ف 24 ساعة. التغليف محترف بزاف. عرض 5 باقات هو الأفضل من ناحية الثمن — كل باقة بـ 89 درهم فقط.", date: "5 مايو 2025", product: "العرض الملكي — 5 باقات", verified: true, helpful: 18, badge: "أفضل مراجعة" },
-  { id: "rev-sara", name: "سارة. م", city: "الدار البيضاء", avatarColor: "bg-violet-100 text-violet-800", stars: 5, title: "بديل مثالي للحلويات الصناعية", text: "كنت نقلق على التغذية ديال أولادي، دابا هادشي هو الحل. طبيعي، بلا سكر، وكيعجبهم — ماكاينش أحسن من هادا.", date: "19 أبريل 2025", product: "باقة التجربة — 1 باقة", verified: true, helpful: 12, badge: null },
-  { id: "rev-omar", name: "عمر. ز", city: "فاس", avatarColor: "bg-amber-100 text-amber-800", stars: 5, title: "المذاق حقيقي 100% مو مصطنع", text: "جربت كتير من المنتجات المجففة ولقيت أن Vitamor هو الوحيد اللي المذاق فيه حقيقي. الفراولة والمانجو كيبانو فريشين.", date: "2 مايو 2025", product: "عرض العائلة — 3 باقات", verified: true, helpful: 9, badge: null },
-  { id: "rev-nadia", name: "نادية. ع", city: "الرباط", avatarColor: "bg-teal-100 text-teal-800", stars: 5, title: "وصل مضبوط وكيفما كان مكتوب عليه", text: "كنت خايفة نطلب أونلاين، لكن التعامل كان محترف بزاف. الباقة وصلت زوينة، التغليف بريميوم، والمذاق راق.", date: "30 مارس 2025", product: "العرض الملكي — 5 باقات", verified: true, helpful: 27, badge: "مشترٍ متكرر" },
 ];
 
 const comparisonRows = [
@@ -84,19 +77,25 @@ const comparisonRows = [
 
 const sortedOffers = [...offers].sort((a, b) => a.order - b.order);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const isRoyalOffer = (id: number) => id === ROYAL_OFFER_ID;
 
 const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>, fallback: string) => {
   e.currentTarget.src = fallback;
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export default function VitamorHome() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBundleId, setSelectedBundleId] = useState<number>(ROYAL_OFFER_ID);
+
+  // Form States
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerCity, setCustomerCity] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  // ⚠️ تم دمج رابط Google Apps Script الخاص بك بنجاح ⚠️
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqmXPEs-25FOkYn36JA0g6jKW9BsW2XbO2qY4XjpBldS-cZa12Vx1nTcHoXIC4XyQdOQ/exec";
 
   const selectedOffer = useMemo(
     () => offers.find(o => o.id === selectedBundleId)!,
@@ -110,20 +109,59 @@ export default function VitamorHome() {
 
   const openModal = useCallback((offerId: number) => {
     setSelectedBundleId(offerId);
+    setOrderSuccess(false);
     setIsModalOpen(true);
   }, []);
 
-  const closeModal = useCallback(() => setIsModalOpen(false), []);
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setOrderSuccess(false);
+    setCustomerName("");
+    setCustomerPhone("");
+    setCustomerCity("");
+  }, []);
 
   const scrollToOffers = useCallback((e?: React.MouseEvent) => {
     e?.preventDefault();
     document.getElementById('offers-section')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
+  // دالة إرسال الطلب إلى Google Sheets
+  const submitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customerName || !customerPhone || !customerCity) {
+      alert("المرجاء ملء جميع المعلومات لتأكيد الطلب");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const orderData = {
+      name: customerName,
+      phone: customerPhone,
+      city: customerCity,
+      bundleName: selectedOffer.name,
+      totalPrice: totalPrice
+    };
+
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(orderData),
+      });
+      
+      setOrderSuccess(true);
+    } catch (error) {
+      alert("حدث خطأ أثناء إرسال الطلب، المرجو المحاولة مرة أخرى أو الاتصال بنا.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-[#fcfcfc] min-h-screen text-[#1a1a1a] font-sans rtl scroll-smooth selection:bg-emerald-100" dir="rtl">
       
-      {/* 1. Navbar */}
       <nav className="flex justify-between items-center px-6 md:px-12 py-5 bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-slate-100">
         <Link href="/" className="text-2xl font-black tracking-tighter text-[#1b4332]">
           VITAMOR<span className="text-emerald-500">.</span>
@@ -133,21 +171,17 @@ export default function VitamorHome() {
           <a href="#offers-section" className="hover:text-emerald-600 transition">العروض</a>
           <a href="#reviews" className="hover:text-emerald-600 transition">آراء الزبناء</a>
         </div>
-        <button
-          onClick={() => scrollToOffers()}
-          className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-xs font-black flex items-center gap-2 border border-emerald-100 hover:bg-emerald-100 transition"
-        >
-          <Zap className="w-3 h-3 fill-current" /> شوف العروض — التوصيل مجاني
+        <button onClick={() => scrollToOffers()} className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-xs font-black flex items-center gap-2 border border-emerald-100 hover:bg-emerald-100 transition">
+          <Zap className="w-3 h-3 fill-current" /> التوصيل مجاني اليوم لباب دارك
         </button>
       </nav>
 
-      {/* 2. Hero Section */}
       <header className="relative py-16 lg:py-24 px-6 md:px-20 overflow-hidden">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8 text-center lg:text-right relative z-10">
             <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 px-4 py-2 rounded-full">
               <Flame className="w-4 h-4 text-orange-600" />
-              <span className="text-xs font-black text-orange-800">+900 طلبية مسلمة بالمغرب هاد الشهر</span>
+              <span className="text-xs font-black text-orange-800">+900 طلبية مسلمة بنجاح هاد الشهر</span>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-black leading-[1.1] text-slate-900 tracking-tight">
@@ -156,57 +190,34 @@ export default function VitamorHome() {
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
-              فواكه طبيعية 100% مجففة بتقنية التبريد (Freeze-Drying). نحافظ على الطعم، الفيتامينات، والقرمشة — بدون إضافة غرام واحد من السكر.
+              فواكه طبيعية 100% مجففة بتقنية التبريد (Freeze-Drying). نحافظ على 97% من الفيتامينات — بدون إضافة غرام واحد من السكر.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 pt-4">
-              <button
-                onClick={() => scrollToOffers()}
-                className="group bg-[#1b4332] text-white px-10 py-5 rounded-2xl font-black text-xl shadow-xl hover:bg-black transition-all flex items-center gap-3 active:scale-95"
-              >
-                اختار عرضك واستلم غدا <ChevronRight className="w-5 h-5 group-hover:translate-x-[-5px] transition-transform" />
+              <button onClick={() => scrollToOffers()} className="group bg-[#1b4332] text-white px-10 py-5 rounded-2xl font-black text-xl shadow-xl hover:bg-black transition-all flex items-center gap-3 active:scale-95">
+                اختار عرضك واستلم غداً <ChevronRight className="w-5 h-5 group-hover:translate-x-[-5px] transition-transform" />
               </button>
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-3 rtl:space-x-reverse">
-                  {[1, 2, 3].map(i => (
-                    <img
-                      key={i}
-                      src={`https://i.pravatar.cc/100?u=${i}`}
-                      className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
-                      alt={`زبون ${i}`}
-                    />
-                  ))}
-                </div>
-                <div className="text-right">
-                  <div className="flex text-yellow-400">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-[10px] font-black text-slate-500 uppercase">+900 تقييم 5 نجوم</p>
-                </div>
-              </div>
             </div>
           </div>
 
           <div className="relative group" onClick={() => openModal(ROYAL_OFFER_ID)}>
             <div className="absolute inset-0 bg-emerald-400/20 rounded-[3rem] blur-3xl group-hover:bg-emerald-400/30 transition-all animate-pulse"></div>
-            <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border-[10px] border-white bg-white aspect-square flex items-center justify-center">
+            <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border-[10px] border-white bg-white aspect-square cursor-pointer">
               <img 
                 src="/hero/main-mix.webp" 
-                alt="Vitamor Mix — فواكه مجففة طبيعية"
+                alt="Vitamor Mix"
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 onError={(e) => handleImgError(e, "https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&w=800")}
               />
               <div className="absolute bottom-8 right-8 bg-white/95 backdrop-blur px-6 py-3 rounded-2xl shadow-2xl border border-slate-100">
-                <p className="text-xs font-black text-emerald-900 tracking-tighter uppercase">طبيعي 100% • بدون سكر مضاف</p>
+                <p className="text-xs font-black text-emerald-900 uppercase">طبيعي 100% • تقنية وكالة NASA</p>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* 3. NASA Technology Section */}
+      {/* NASA Section */}
       <section id="nasa-section" className="bg-slate-950 py-24 px-6 md:px-20 text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="space-y-8 order-1 lg:order-2">
@@ -253,7 +264,7 @@ export default function VitamorHome() {
         </div>
       </section>
 
-      {/* 4. Athlete Nutrition */}
+      {/* Athlete Nutrition */}
       <section className="py-24 px-6 md:px-20 max-w-7xl mx-auto">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-4xl md:text-6xl font-black text-slate-900 uppercase">الوقود النظيف للرياضيين</h2>
@@ -278,80 +289,51 @@ export default function VitamorHome() {
         </div>
       </section>
 
-      {/* 5. Offers Section (تحديث تكبير الصور) */}
       <section id="offers-section" className="py-24 px-6 md:px-20 bg-[#f8fafc] border-y border-slate-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter">وفر أكثر، كلما طلبتي أكثر</h2>
-            <p className="text-lg text-slate-500 font-bold italic">التوصيل مجاني لجميع الطلبات من باقتين — الدفع عند الاستلام بدون أي مخاطرة</p>
+            <p className="text-lg text-slate-500 font-bold italic">التوصيل مجاني من باقتين — الدفع كاش عند الاستلام</p>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center">
             {sortedOffers.map((offer) => {
               const isRoyal = isRoyalOffer(offer.id);
               return (
-                <div
-                  key={offer.id}
-                  className={`relative bg-white transition-all duration-500 flex flex-col ${
-                    isRoyal 
-                    ? 'border-[6px] border-amber-400 shadow-[0_30px_60px_-15px_rgba(245,158,11,0.3)] lg:scale-110 z-20 rounded-[3.5rem] p-8' 
-                    : 'border-2 border-emerald-100 shadow-lg rounded-[2.5rem] p-6 lg:opacity-95 hover:opacity-100'
-                  }`}
-                >
+                <div key={offer.id} className={`relative bg-white transition-all duration-500 flex flex-col ${isRoyal ? 'border-[6px] border-amber-400 shadow-[0_30px_60px_-15px_rgba(245,158,11,0.3)] lg:scale-110 z-20 rounded-[3.5rem] p-10' : 'border-2 border-emerald-100 shadow-lg rounded-[2.5rem] p-8 lg:opacity-90 hover:opacity-100'}`}>
                   {offer.tag && (
-                    <div className={`absolute -top-5 left-1/2 -translate-x-1/2 text-white text-xs font-black px-8 py-2 rounded-full shadow-xl z-30 whitespace-nowrap ${
-                      isRoyal ? 'bg-amber-500' : 'bg-emerald-600'
-                    }`}>
+                    <div className={`absolute -top-5 left-1/2 -translate-x-1/2 text-white text-xs font-black px-8 py-2 rounded-full shadow-xl z-30 whitespace-nowrap ${isRoyal ? 'bg-amber-500' : 'bg-emerald-600'}`}>
                       {offer.tag}
                     </div>
                   )}
 
-                  {/* 🟢 التغيير الجوهري هنا: تكبير الصور لتبدو مثل الـ Hero 🟢 */}
-                  <div className={`relative w-full rounded-[2.5rem] mb-8 overflow-hidden bg-slate-50 flex items-center justify-center border-4 border-white shadow-inner group-hover:shadow-md transition-all ${
-                    isRoyal ? 'h-[320px] md:h-[380px]' : 'h-[280px] md:h-[320px]'
-                  }`}>
+                  <div className={`relative w-full rounded-[2.5rem] mb-8 overflow-hidden bg-slate-50 flex items-center justify-center border-4 border-white shadow-inner transition-all ${isRoyal ? 'h-[320px] md:h-[380px]' : 'h-[280px] md:h-[320px]'}`}>
                     <img 
                       src={offer.image} 
                       alt={offer.name} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      onError={(e) => handleImgError(e, 'https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&w=800')}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-110 cursor-pointer"
+                      onClick={() => openModal(offer.id)}
                     />
-                    
-                    {/* طبقة تدرج لوني لإبراز السعر فوق الصورة مباشرة مثل الـ Hero */}
-                    <div className={`absolute inset-0 bg-gradient-to-t ${isRoyal ? 'from-amber-900/60 via-amber-900/10' : 'from-[#1b4332]/60 via-[#1b4332]/10'} to-transparent`} />
-                    
-                    {/* السعر العائم داخل الصورة بشكل فاخر وبحجم ضخم */}
+                    <div className={`absolute inset-0 pointer-events-none bg-gradient-to-t ${isRoyal ? 'from-amber-900/60 via-amber-900/10' : 'from-[#1b4332]/60 via-[#1b4332]/10'} to-transparent`} />
                     <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md px-6 py-3 rounded-2xl shadow-xl border border-white">
                       <p className={`text-3xl font-black tracking-tighter ${isRoyal ? 'text-amber-600' : 'text-emerald-800'}`}>
                         {offer.price} <span className="text-base font-bold text-slate-500">درهم</span>
                       </p>
                     </div>
-
-                    {/* عدد الباقات الفوق */}
-                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full shadow border border-white">
-                      <p className="text-xs font-black text-slate-700 uppercase">{offer.totalPacks} باقات</p>
-                    </div>
                   </div>
 
                   <div className="text-center flex-grow flex flex-col">
-                    <h3 className={`font-black tracking-tight mb-6 ${isRoyal ? 'text-3xl text-slate-900' : 'text-2xl text-slate-800'}`}>
+                    <h3 className={`font-black tracking-tight mb-6 ${isRoyal ? 'text-2xl text-slate-900' : 'text-xl text-slate-800'}`}>
                       {offer.name}
                     </h3>
                     
                     <ul className="space-y-4 mb-10 text-sm font-bold text-slate-600 text-right pr-2">
-                      <li className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" /> جودة طبيعية 100%</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" /> {offer.totalPacks} باقات بريميوم</li>
                       <li className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" /> {offer.shipping === 0 ? "توصيل فابور مجاني" : "توصيل سريع لباب دارك"}</li>
                       <li className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" /> الدفع كاش عند الاستلام</li>
                     </ul>
 
-                    <button
-                      onClick={() => openModal(offer.id)}
-                      className={`w-full py-5 rounded-[2rem] font-black text-xl transition-all shadow-xl active:scale-95 mt-auto ${
-                        isRoyal
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-200 hover:scale-105'
-                        : 'bg-emerald-700 text-white hover:bg-emerald-800 shadow-emerald-100'
-                      }`}
-                    >
+                    <button onClick={() => openModal(offer.id)} className={`w-full py-5 rounded-[2rem] font-black text-xl transition-all shadow-xl active:scale-95 mt-auto ${isRoyal ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-200' : 'bg-emerald-700 text-white hover:bg-emerald-800 shadow-emerald-100'}`}>
                       {offer.ctaLabel}
                     </button>
                   </div>
@@ -362,7 +344,7 @@ export default function VitamorHome() {
         </div>
       </section>
 
-      {/* 6. Social Proof — Amazon/Trustpilot style */}
+      {/* Reviews Section */}
       <section id="reviews" className="py-24 px-6 md:px-20 bg-[#f8fafc] border-y border-slate-100">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-14 gap-8">
@@ -377,19 +359,6 @@ export default function VitamorHome() {
                   {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                 </div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">من 5 نجوم</p>
-              </div>
-              <div className="h-16 w-px bg-slate-100" />
-              <div className="space-y-1.5 min-w-[130px]">
-                {[{ stars: 5, pct: 91 }, { stars: 4, pct: 7 }, { stars: 3, pct: 2 }].map(({ stars, pct }) => (
-                  <div key={stars} className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-slate-400 w-2.5">{stars}</span>
-                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 shrink-0" />
-                    <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${pct}%` }} />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 w-7">{pct}%</span>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -407,11 +376,6 @@ export default function VitamorHome() {
                       <p className="text-[11px] text-slate-400 font-medium">{rev.city}، المغرب</p>
                     </div>
                   </div>
-                  {rev.badge && (
-                    <span className="text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-full whitespace-nowrap">
-                      {rev.badge}
-                    </span>
-                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex gap-0.5 text-yellow-400">
@@ -421,24 +385,13 @@ export default function VitamorHome() {
                 </div>
                 <p className="font-black text-sm text-slate-900 leading-snug">{rev.title}</p>
                 <p className="text-sm text-slate-600 leading-relaxed flex-1">{rev.text}</p>
-                <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2 border border-slate-100">
-                  <ShoppingCart className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  <p className="text-[11px] font-bold text-slate-500 truncate">تم الشراء: {rev.product}</p>
-                </div>
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-[11px] font-bold text-emerald-600">مشتري موثق</span>
-                  </div>
-                  <span className="text-[11px] text-slate-400 font-medium">{rev.helpful} شخص وجدها مفيدة</span>
-                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 7. Footer */}
+      {/* Footer */}
       <footer className="bg-slate-950 text-slate-400 pt-24 pb-12 px-6 md:px-20 border-t-8 border-emerald-600">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16 border-b border-slate-800 pb-20">
           <div className="space-y-6 text-center md:text-right">
@@ -448,11 +401,7 @@ export default function VitamorHome() {
           <div className="space-y-6 text-center md:text-right">
             <h4 className="text-white text-lg font-black uppercase tracking-widest">تصفح الموقع</h4>
             <ul className="space-y-4 text-sm font-bold">
-              <li>
-                <a href="#offers-section" onClick={scrollToOffers} className="hover:text-emerald-400 transition cursor-pointer">
-                  جميع العروض المتاحة
-                </a>
-              </li>
+              <li><a href="#offers-section" onClick={scrollToOffers} className="hover:text-emerald-400 transition cursor-pointer">جميع العروض المتاحة</a></li>
               <li><a href="#nasa-section" className="hover:text-emerald-400 transition">تكنولوجيا التبريد</a></li>
               <li><Link href="/refund" className="hover:text-emerald-400 transition">سياسة الاستبدال</Link></li>
               <li><Link href="/about" className="hover:text-emerald-400 transition">من نحن</Link></li>
@@ -472,163 +421,92 @@ export default function VitamorHome() {
               </li>
             </ul>
           </div>
-          <div className="bg-slate-900/50 p-8 rounded-[2.5rem] border border-slate-800 space-y-6">
-            <h4 className="text-white text-lg font-black uppercase">ضماناتنا</h4>
-            <ul className="space-y-4 text-sm font-bold">
-              <li className="flex items-center gap-4"><ShieldCheck className="w-6 h-6 text-emerald-500" /> <span>جودة طبيعية 100% مضمونة</span></li>
-              <li className="flex items-center gap-4"><Truck className="w-6 h-6 text-emerald-500" /> <span>توصيل خلال 24-48 ساعة</span></li>
-            </ul>
-          </div>
         </div>
-        <div className="flex flex-col md:flex-row items-center justify-between pt-10 gap-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em]">
-            © {new Date().getFullYear()} VITAMOR PREMIUM FRUITS. ALL RIGHTS RESERVED.
-          </p>
-          <div className="flex gap-6 text-[10px] font-black uppercase tracking-widest">
-            <Link href="/privacy" className="hover:text-emerald-400 transition">سياسة الخصوصية</Link>
-            <Link href="/about" className="hover:text-emerald-400 transition">من نحن</Link>
-            <Link href="/refund" className="hover:text-emerald-400 transition">الاستبدال والإرجاع</Link>
-          </div>
-        </div>
+        <p className="text-center pt-10 text-[10px] font-black uppercase tracking-[0.3em]">© {new Date().getFullYear()} VITAMOR PREMIUM FRUITS. ALL RIGHTS RESERVED.</p>
       </footer>
 
-      {/* 8. Sticky Mobile CTA */}
-      <div className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-slate-100 p-4 z-40 flex justify-center shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
-        <button
-          onClick={() => openModal(ROYAL_OFFER_ID)}
-          className="w-full max-w-md bg-gradient-to-r from-emerald-600 to-[#1b4332] text-white py-5 rounded-[2.5rem] font-black text-xl shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform animate-bounce-slow"
-        >
-          <MousePointerClick className="w-6 h-6" />
-          العرض الملكي — التوصيل مجاني لباب دارك
-        </button>
-      </div>
-
-      {/* 9. Checkout Modal */}
+      {/* Checkout Modal with Form Submission */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-950/90 z-50 flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-md">
-          <div className="bg-white rounded-t-[3.5rem] md:rounded-[3.5rem] w-full max-w-xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-full duration-300 max-h-[95vh] overflow-y-auto">
+          <div className="bg-white rounded-t-[3rem] md:rounded-[3rem] w-full max-w-xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-full duration-300 max-h-[90vh] overflow-y-auto">
             
             <div className="p-8 bg-[#f8fafc] border-b flex justify-between items-center sticky top-0 z-10">
               <div className="text-right">
-                <h3 className="font-black text-2xl text-slate-900">أكمل طلبك — التوصيل لباب دارك</h3>
-                <p className="text-[10px] font-black text-emerald-600 mt-1 uppercase tracking-widest flex items-center gap-1">
-                  <Zap className="w-3 h-3 fill-current" /> الدفع كاش عند الاستلام — بدون أي مخاطرة
-                </p>
+                <h3 className="font-black text-2xl text-slate-900">{orderSuccess ? "تم استلام طلبك! 🎉" : "أكمل طلبك الآن"}</h3>
+                {!orderSuccess && <p className="text-xs font-black text-emerald-600 mt-1 uppercase tracking-widest">الدفع كاش عند الاستلام</p>}
               </div>
-              <button
-                onClick={closeModal}
-                className="bg-white p-3 rounded-full shadow-xl hover:bg-red-50 hover:text-red-500 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <button onClick={closeModal} className="bg-white p-3 rounded-full shadow-lg text-slate-400 hover:text-red-500"><X className="w-6 h-6" /></button>
             </div>
 
-            <div className="p-8 space-y-8">
-              {/* Bundle Selector */}
-              <div className="space-y-4">
-                <p className="text-sm font-black text-slate-800 flex items-center gap-2">
-                  <ShoppingCart className="w-4 h-4 text-emerald-600" /> 1. اختار عرضك:
-                </p>
-                {offers.map((offer) => (
-                  <div
-                    key={offer.id}
-                    onClick={() => setSelectedBundleId(offer.id)}
-                    className={`relative p-5 rounded-[2rem] border-4 cursor-pointer transition-all flex items-center justify-between ${
-                      selectedBundleId === offer.id
-                        ? isRoyalOffer(offer.id)
-                          ? 'border-amber-400 bg-amber-50 shadow-lg scale-[1.02]'
-                          : 'border-emerald-500 bg-emerald-50 shadow-lg scale-[1.02]'
-                        : 'border-slate-100 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full border-4 flex items-center justify-center shrink-0 ${
-                        selectedBundleId === offer.id
-                          ? isRoyalOffer(offer.id) ? 'border-amber-400 bg-amber-400' : 'border-emerald-500 bg-emerald-500'
-                          : 'border-slate-200'
-                      }`}>
-                        {selectedBundleId === offer.id && <CheckCircle className="w-5 h-5 text-white" />}
-                      </div>
-                      <div>
-                        <p className={`font-black text-xl ${selectedBundleId === offer.id && isRoyalOffer(offer.id) ? 'text-amber-900' : 'text-slate-800'}`}>
-                          {offer.name}
-                        </p>
-                        <p className="text-[10px] font-black text-slate-400 uppercase">
-                          {offer.totalPacks} باقات • {offer.shipping === 0 ? 'توصيل مجاني ✅' : `توصيل: ${offer.shipping} درهم`}
-                        </p>
-                      </div>
-                    </div>
-                    <p className={`font-black text-2xl ${selectedBundleId === offer.id && isRoyalOffer(offer.id) ? 'text-amber-600' : 'text-emerald-800'}`}>
-                      {offer.price} <span className="text-xs">درهم</span>
-                    </p>
+            <div className="p-8">
+              {orderSuccess ? (
+                <div className="text-center space-y-6 py-10">
+                  <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                    <CheckCircle className="w-12 h-12 text-emerald-600" />
                   </div>
-                ))}
-              </div>
+                  <h2 className="text-3xl font-black text-slate-900">شكراً لك، {customerName}!</h2>
+                  <p className="text-lg text-slate-600">تم تسجيل طلبك بنجاح. سنتصل بك قريباً على الرقم <span className="font-bold">{customerPhone}</span> لتأكيد الطلب وتحديد موعد التوصيل.</p>
+                  <button onClick={closeModal} className="mt-8 bg-[#1b4332] text-white px-10 py-4 rounded-2xl font-black text-lg w-full">العودة للمتجر</button>
+                </div>
+              ) : (
+                <form onSubmit={submitOrder} className="space-y-8">
+                  <div className="bg-slate-950 p-6 rounded-[2.5rem] text-white space-y-2">
+                    <div className="flex justify-between text-sm font-bold opacity-70"><span>المنتجات:</span><span>{selectedOffer.price} درهم</span></div>
+                    {selectedOffer.shipping > 0 && <div className="flex justify-between text-sm font-bold opacity-70"><span>التوصيل:</span><span>{selectedOffer.shipping} درهم</span></div>}
+                    <div className="flex justify-between text-3xl font-black pt-4 border-t border-slate-800"><span>الإجمالي:</span><span className="text-emerald-500">{totalPrice} درهم</span></div>
+                  </div>
 
-              {/* Price Summary */}
-              <div className="bg-slate-950 p-6 rounded-[2.5rem] text-white shadow-2xl space-y-3">
-                <div className="flex justify-between items-center text-sm font-bold text-slate-400">
-                  <span>المنتجات:</span><span>{selectedOffer.price} درهم</span>
-                </div>
-                <div className="flex justify-between items-center text-sm font-bold text-slate-400">
-                  <span>التوصيل:</span>
-                  <span className={selectedOffer.shipping === 0 ? "text-emerald-400" : ""}>
-                    {selectedOffer.shipping === 0 ? 'مجاني 🎁' : `${selectedOffer.shipping} درهم`}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-3xl font-black pt-4 border-t border-slate-800">
-                  <span>الإجمالي:</span>
-                  <span className="text-emerald-500">{totalPrice} درهم</span>
-                </div>
-              </div>
+                  <div className="space-y-4">
+                    <input 
+                      type="text" 
+                      required
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="الاسم والنسب" 
+                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none font-black text-lg focus:border-emerald-500" 
+                    />
+                    <input 
+                      type="tel" 
+                      required
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="رقم الهاتف" 
+                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none font-black text-lg text-left focus:border-emerald-500" 
+                      dir="ltr" 
+                    />
+                    <input 
+                      type="text" 
+                      required
+                      value={customerCity}
+                      onChange={(e) => setCustomerCity(e.target.value)}
+                      placeholder="المدينة" 
+                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none font-black text-lg focus:border-emerald-500" 
+                    />
+                  </div>
 
-              {/* Form Fields */}
-              <div className="space-y-4">
-                <p className="text-sm font-black text-slate-800 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-600" /> 2. أدخل معلوماتك للتوصيل:
-                </p>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="الاسم الكامل — مثال: محمد بنعلي"
-                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-5 outline-none font-black text-lg focus:border-emerald-500 transition-colors"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="رقم هاتفك — مثال: 0612345678"
-                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-5 outline-none font-black text-lg text-left focus:border-emerald-500"
-                    dir="ltr"
-                  />
-                  <input
-                    type="text"
-                    placeholder="المدينة — مثال: الدار البيضاء"
-                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-5 outline-none font-black text-lg focus:border-emerald-500 transition-colors"
-                  />
-                </div>
-              </div>
-
-              <button
-                className={`w-full text-white py-6 rounded-[2.5rem] font-black text-2xl transition-all shadow-2xl active:scale-95 ${
-                  isRoyalOffer(selectedBundleId)
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-600'
-                    : 'bg-[#1b4332]'
-                }`}
-              >
-                أكد طلبي — {totalPrice} درهم كاش عند الاستلام ✓
-              </button>
+                  <button 
+                    disabled={isSubmitting}
+                    className={`w-full text-white py-6 rounded-[2.5rem] font-black text-2xl shadow-2xl flex items-center justify-center gap-3 transition-all ${
+                    selectedBundleId === ROYAL_OFFER_ID ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-emerald-700'
+                  } ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'active:scale-95'}`}>
+                    {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : "تأكيد الطلب ✓"}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
       )}
 
+      <div className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-slate-100 p-4 z-40 flex justify-center shadow-2xl">
+        <button onClick={() => openModal(ROYAL_OFFER_ID)} className="w-full max-w-md bg-gradient-to-r from-emerald-700 to-[#1b4332] text-white py-4 rounded-[2rem] font-black text-xl shadow-xl flex items-center justify-center gap-3 animate-bounce-slow">
+          <MousePointerClick className="w-6 h-6" /> العرض الملكي — التوصيل مجاني
+        </button>
+      </div>
+
       <style dangerouslySetInnerHTML={{__html: `
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-        .animate-bounce-slow {
-          animation: bounce-slow 4s infinite ease-in-out;
-        }
+        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .animate-bounce-slow { animation: bounce-slow 4s infinite ease-in-out; }
       `}} />
     </div>
   );
