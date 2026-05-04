@@ -39,7 +39,7 @@ const offers = [
     image: "/products/pack5.webp",
     tag: "الأكثر طلباً 🔥",
     ctaLabel: "احجز العرض الملكي الآن",
-    order: 2 // Positionné au centre
+    order: 2 // العرض الملكي في الوسط
   },
   { 
     id: 2, 
@@ -278,7 +278,7 @@ export default function VitamorHome() {
         </div>
       </section>
 
-      {/* 5. Offers Section (Royal Offer Centered) */}
+      {/* 5. Offers Section (تحديث تكبير الصور) */}
       <section id="offers-section" className="py-24 px-6 md:px-20 bg-[#f8fafc] border-y border-slate-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
@@ -286,7 +286,7 @@ export default function VitamorHome() {
             <p className="text-lg text-slate-500 font-bold italic">التوصيل مجاني لجميع الطلبات من باقتين — الدفع عند الاستلام بدون أي مخاطرة</p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center">
             {sortedOffers.map((offer) => {
               const isRoyal = isRoyalOffer(offer.id);
               return (
@@ -294,8 +294,8 @@ export default function VitamorHome() {
                   key={offer.id}
                   className={`relative bg-white transition-all duration-500 flex flex-col ${
                     isRoyal 
-                    ? 'border-[6px] border-amber-400 shadow-[0_30px_60px_-15px_rgba(245,158,11,0.3)] lg:scale-110 z-20 rounded-[3.5rem] p-10' 
-                    : 'border-2 border-emerald-100 shadow-lg rounded-[2.5rem] p-8 lg:opacity-90 hover:opacity-100'
+                    ? 'border-[6px] border-amber-400 shadow-[0_30px_60px_-15px_rgba(245,158,11,0.3)] lg:scale-110 z-20 rounded-[3.5rem] p-8' 
+                    : 'border-2 border-emerald-100 shadow-lg rounded-[2.5rem] p-6 lg:opacity-95 hover:opacity-100'
                   }`}
                 >
                   {offer.tag && (
@@ -306,43 +306,49 @@ export default function VitamorHome() {
                     </div>
                   )}
 
-                  <div className="relative h-56 w-full rounded-[2rem] mb-6 overflow-hidden bg-slate-50 flex items-center justify-center">
+                  {/* 🟢 التغيير الجوهري هنا: تكبير الصور لتبدو مثل الـ Hero 🟢 */}
+                  <div className={`relative w-full rounded-[2.5rem] mb-8 overflow-hidden bg-slate-50 flex items-center justify-center border-4 border-white shadow-inner group-hover:shadow-md transition-all ${
+                    isRoyal ? 'h-[320px] md:h-[380px]' : 'h-[280px] md:h-[320px]'
+                  }`}>
                     <img 
                       src={offer.image} 
                       alt={offer.name} 
-                      className="w-full h-full object-contain p-4 transition-transform duration-700 hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       onError={(e) => handleImgError(e, 'https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&w=800')}
                     />
-                    <div className="absolute bottom-3 right-3 bg-white/95 px-4 py-1.5 rounded-xl shadow border border-slate-50">
-                      <p className={`text-xl font-black ${isRoyal ? 'text-amber-600' : 'text-emerald-700'}`}>
-                        {offer.price} <span className="text-xs font-bold text-slate-500">درهم</span>
+                    
+                    {/* طبقة تدرج لوني لإبراز السعر فوق الصورة مباشرة مثل الـ Hero */}
+                    <div className={`absolute inset-0 bg-gradient-to-t ${isRoyal ? 'from-amber-900/60 via-amber-900/10' : 'from-[#1b4332]/60 via-[#1b4332]/10'} to-transparent`} />
+                    
+                    {/* السعر العائم داخل الصورة بشكل فاخر وبحجم ضخم */}
+                    <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md px-6 py-3 rounded-2xl shadow-xl border border-white">
+                      <p className={`text-3xl font-black tracking-tighter ${isRoyal ? 'text-amber-600' : 'text-emerald-800'}`}>
+                        {offer.price} <span className="text-base font-bold text-slate-500">درهم</span>
                       </p>
+                    </div>
+
+                    {/* عدد الباقات الفوق */}
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full shadow border border-white">
+                      <p className="text-xs font-black text-slate-700 uppercase">{offer.totalPacks} باقات</p>
                     </div>
                   </div>
 
                   <div className="text-center flex-grow flex flex-col">
-                    <h3 className={`font-black tracking-tight mb-6 ${isRoyal ? 'text-2xl text-slate-900' : 'text-xl text-slate-800'}`}>
+                    <h3 className={`font-black tracking-tight mb-6 ${isRoyal ? 'text-3xl text-slate-900' : 'text-2xl text-slate-800'}`}>
                       {offer.name}
                     </h3>
                     
                     <ul className="space-y-4 mb-10 text-sm font-bold text-slate-600 text-right pr-2">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" /> {offer.totalPacks} باقات بريميوم
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
-                        {offer.shipping === 0 ? "توصيل فابور مجاني" : "توصيل سريع لباب دارك"}
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" /> الدفع كاش عند الاستلام
-                      </li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" /> جودة طبيعية 100%</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" /> {offer.shipping === 0 ? "توصيل فابور مجاني" : "توصيل سريع لباب دارك"}</li>
+                      <li className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" /> الدفع كاش عند الاستلام</li>
                     </ul>
 
                     <button
                       onClick={() => openModal(offer.id)}
-                      className={`w-full py-4 rounded-2xl font-black text-lg transition-all shadow-lg active:scale-95 mt-auto ${
+                      className={`w-full py-5 rounded-[2rem] font-black text-xl transition-all shadow-xl active:scale-95 mt-auto ${
                         isRoyal
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-200'
+                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-200 hover:scale-105'
                         : 'bg-emerald-700 text-white hover:bg-emerald-800 shadow-emerald-100'
                       }`}
                     >
@@ -356,7 +362,7 @@ export default function VitamorHome() {
         </div>
       </section>
 
-      {/* 6. Social Proof */}
+      {/* 6. Social Proof — Amazon/Trustpilot style */}
       <section id="reviews" className="py-24 px-6 md:px-20 bg-[#f8fafc] border-y border-slate-100">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-14 gap-8">
@@ -442,7 +448,11 @@ export default function VitamorHome() {
           <div className="space-y-6 text-center md:text-right">
             <h4 className="text-white text-lg font-black uppercase tracking-widest">تصفح الموقع</h4>
             <ul className="space-y-4 text-sm font-bold">
-              <li><a href="#offers-section" onClick={scrollToOffers} className="hover:text-emerald-400 transition cursor-pointer">جميع العروض المتاحة</a></li>
+              <li>
+                <a href="#offers-section" onClick={scrollToOffers} className="hover:text-emerald-400 transition cursor-pointer">
+                  جميع العروض المتاحة
+                </a>
+              </li>
               <li><a href="#nasa-section" className="hover:text-emerald-400 transition">تكنولوجيا التبريد</a></li>
               <li><Link href="/refund" className="hover:text-emerald-400 transition">سياسة الاستبدال</Link></li>
               <li><Link href="/about" className="hover:text-emerald-400 transition">من نحن</Link></li>
