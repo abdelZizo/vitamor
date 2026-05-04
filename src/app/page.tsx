@@ -125,9 +125,7 @@ export default function VitamorHome() {
     e?.preventDefault();
     document.getElementById('offers-section')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
-
-  // دالة إرسال الطلب إلى Google Sheets
-  const submitOrder = async (e: React.FormEvent) => {
+const submitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerName || !customerPhone || !customerCity) {
       alert("المرجاء ملء جميع المعلومات لتأكيد الطلب");
@@ -147,10 +145,14 @@ export default function VitamorHome() {
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        mode: 'no-cors', // هذا هو التعديل الأساسي لتجاوز حظر المتصفح
+        headers: { 
+          'Content-Type': 'text/plain;charset=utf-8' 
+        },
         body: JSON.stringify(orderData),
       });
       
+      // في وضع no-cors لا يمكننا قراءة الرد، لذلك نفترض النجاح إذا لم يحدث خطأ في الشبكة
       setOrderSuccess(true);
     } catch (error) {
       alert("حدث خطأ أثناء إرسال الطلب، المرجو المحاولة مرة أخرى أو الاتصال بنا.");
